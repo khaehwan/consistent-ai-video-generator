@@ -1,0 +1,174 @@
+# Configuration for Raspberry Pi Wearable Sensor System
+# Virtual Production Behavior Detection
+
+# API Configuration
+api:
+    # Base URL for the virtual production server
+    # VP API runs on port 8001 (not 8000)
+    base_url: "http://192.168.0.10:8001"
+
+    # API endpoints (HTTP backup endpoints on VP API server)
+    endpoints:
+        behavior: "/api/behavior"
+        status: "/api/status"
+        heartbeat: "/api/heartbeat"
+
+    # Connection settings
+    timeout: 5 # seconds
+    retry_attempts: 3
+    retry_delay: 1 # seconds
+
+    # Authentication (if needed)
+    auth:
+        enabled: false
+        token: ""
+
+    # WebSocket settings for real-time VP communication (primary connection)
+    websocket:
+        url: "ws://192.168.0.10:8001/vp/sensor-events"
+        reconnect_delay: 5 # seconds
+        ping_interval: 30 # seconds
+
+# Sensor Configuration
+sensors:
+    # Sense HAT settings
+    sense_hat:
+        enabled: true
+        rotation: 0 # Display rotation (0, 90, 180, 270)
+        low_light: true # Enable low light mode
+
+    # Camera settings
+    camera:
+        enabled: true
+        resolution: [640, 480] # [width, height]
+        framerate: 10
+        brightness_sample_rate: 2 # Hz
+
+    # Microphone settings
+    microphone:
+        enabled: true
+        sample_rate: 48000
+        chunk_size: 1024
+        channels: 1
+        audio_format: "int16"
+
+# Behavior Detection Thresholds
+behaviors:
+    # Movement detection (using accelerometer)
+    movement:
+        enabled: true
+        sample_window: 10 # samples
+        threshold_static: 0.1 # m/s²
+        threshold_walking: 0.5 # m/s²
+        threshold_running: 1.5 # m/s²
+        cooldown: 2 # seconds
+
+    # Fall detection (using accelerometer & gyroscope)
+    fall:
+        enabled: true
+        acceleration_threshold: 2.0 # g (gravity units)
+        angle_threshold: 45 # degrees
+        impact_duration: 0.5 # seconds
+        recovery_time: 3 # seconds
+
+    # Turn around detection (using gyroscope)
+    turn:
+        enabled: true
+        rotation_threshold: 160 # degrees
+        rotation_time: 2 # seconds (max time for turn)
+        cooldown: 3 # seconds
+
+    # Shout detection (using microphone)
+    shout:
+        enabled: true
+        volume_threshold: 70 # dB
+        duration_min: 500 # milliseconds
+        frequency_range: [200, 2000] # Hz [min, max]
+        cooldown: 2 # seconds
+
+    # Brightness detection (using camera)
+    brightness:
+        enabled: true
+        dark_threshold: 50 # 0-255 scale
+        bright_threshold: 200 # 0-255 scale
+        change_rate: 30 # minimum change to trigger
+        sample_window: 5 # frames
+        cooldown: 5 # seconds
+
+    # Compass heading detection (using magnetometer)
+    compass:
+        enabled: true
+        change_threshold: 15 # degrees (minimum angle change to log)
+
+# Display Configuration (Sense HAT LED Matrix)
+display:
+    # Text display settings
+    scroll_speed: 0.1 # seconds
+    text_color: [255, 255, 255] # RGB
+    background_color: [0, 0, 0] # RGB
+
+    # Behavior display colors
+    colors:
+        stop: [0, 255, 0] # Green
+        walk: [255, 255, 0] # Yellow
+        run: [255, 128, 0] # Orange
+        fall: [255, 0, 0] # Red
+        turn: [0, 255, 255] # Cyan
+        shout: [255, 0, 255] # Magenta
+        dark: [64, 64, 64] # Gray
+        bright: [255, 255, 255] # White
+        compass: [0, 128, 255] # Light Blue
+
+    # Display patterns (8x8 LED patterns)
+    # NOTE: 현재 사용되지 않음 - 아이콘은 코드에 하드코딩되어 있음 (sense_hat_handler.py)
+    # patterns:
+    #     stop: "icons/stop.txt"
+    #     walk: "icons/walk.txt"
+    #     run: "icons/run.txt"
+    #     fall: "icons/fall.txt"
+    #     turn: "icons/turn.txt"
+    #     shout: "icons/shout.txt"
+    #     dark: "icons/dark.txt"
+    #     bright: "icons/bright.txt"
+
+    # Dashboard mode settings
+    # Layout options: quad, strip, compact
+    # - quad: 4x4 quadrants (Movement, Fall, Turn, Shout)
+    # - strip: Horizontal bars (each behavior gets 1-2 rows)
+    # - compact: 2x2 indicators for each behavior
+    dashboard_layout: "quad"
+
+# Logging Configuration
+logging:
+    level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    file: "logs/wearable_sensor.log"
+    max_size: 10485760 # 10MB
+    backup_count: 5
+    console_output: true
+
+# System Configuration
+system:
+    # Device identification
+    device_id: "rpi_wearable_001"
+    location: "unspecified"
+
+    # Performance settings
+    main_loop_delay: 0.1 # seconds
+    sensor_polling_rate: 10 # Hz (Sense HAT I2C is slow, 10Hz is sufficient for behavior detection)
+
+    # Data buffering
+    buffer_size: 100 # events
+    offline_storage: true
+    offline_storage_path: "data/offline_events.json"
+
+    # Health monitoring
+    heartbeat_interval: 30 # seconds
+    auto_restart: true
+
+# Debug Mode
+debug:
+    enabled: false
+    simulate_sensors: false # Use fake sensor data for testing
+    verbose_output: false
+    save_raw_data: false
+    raw_data_path: "data/raw/"

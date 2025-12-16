@@ -1,0 +1,15 @@
+# Azure Kinect Dependencies
+# Note: Using custom ctypes wrapper (k4a_wrapper.py) instead of pykinect-azure
+# Requires Azure Kinect SDK installed on Windows
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Communication
+websocket-client>=1.6.0
+requests>=2.31.0
+
+# Configuration
+PyYAML>=6.0
+
+# Logging
+python-json-logger>=2.0.7

@@ -1,0 +1,59 @@
+# Azure Kinect 설정 파일
+
+# 시뮬레이션 모드 (Kinect 없이 테스트)
+simulation:
+    enabled: false # true: 시뮬레이션 모드, false: 실제 Kinect 사용
+    auto_mode: true # true: 자동 순환, false: 키보드 입력
+    auto_interval: 5.0 # 자동 모드 자세 변경 간격 (초)
+
+# API 서버 연결 설정
+api_server:
+    host: "192.168.0.10" # API 서버 IP 주소 (localhost 또는 192.168.x.x)
+    ws_port: 8001 # WebSocket 포트
+    http_port: 8000 # HTTP 포트 (fallback)
+
+# Kinect 센서 설정
+kinect:
+    sensor_id: "kinect_001" # 센서 고유 ID
+    debounce_seconds: 0.0 # 자세 유지 시간 (초) - 0은 즉시 감지
+    frame_rate: 30 # 프레임 레이트 (FPS)
+    enable_body_tracking: true # Body Tracking 활성화
+
+# 자세 감지 임계값 설정
+posture_detection:
+    # 팔 들기 감지 (손이 어깨보다 얼마나 높아야 하는지)
+    arm_raise_threshold: 0.2 # 0.2 = 어깨 높이의 20% 이상
+
+    # 앉음 감지 (엉덩이-무릎 높이 차이를 전체 키 대비 비율로 계산)
+    sitting_threshold: 0.15 # 0.15 = 엉덩이가 무릎보다 전체 키의 15% 이내로 차이나면 앉음
+
+    # 누움 감지 (몸통 Y축 범위를 전체 키 대비 비율로 계산)
+    lying_threshold: 0.25 # 0.25 = 몸통의 Y축 범위가 전체 키의 25% 이하면 누움 (수평)
+
+    # 관절 신뢰도 임계값 (0.0 ~ 1.0)
+    joint_confidence_threshold: 0.5 # 이 값 이상의 신뢰도만 사용
+
+# WebSocket 연결 설정
+websocket:
+    reconnect_delay: 5.0 # 재연결 대기 시간 (초)
+    max_reconnect_attempts: 10 # 최대 재연결 시도 횟수 (0 = 무한)
+    ping_interval: 30.0 # 핑 전송 간격 (초)
+
+# HTTP Fallback 설정
+http_fallback:
+    enabled: true # HTTP fallback 활성화
+    timeout: 5.0 # HTTP 요청 타임아웃 (초)
+
+# 로깅 설정
+logging:
+    level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    file: "kinect.log" # 로그 파일 경로
+    console: true # 콘솔 출력 활성화
+    max_bytes: 10485760 # 로그 파일 최대 크기 (10MB)
+    backup_count: 3 # 로그 파일 백업 개수
+
+# 디버그 설정
+debug:
+    show_skeleton: true # 스켈레톤 시각화 (OpenCV 창)
+    save_frames: false # 프레임 저장
+    print_joint_positions: true # 관절 위치 출력
